@@ -39,12 +39,14 @@
                         d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Buat Target Baru</h1>
-            <p class="text-white/60">Tentukan target income dan periode waktunya</p>
+            <h1 class="text-3xl font-bold text-white mb-2">{{ $isEditMode ? 'Edit Target' : 'Buat Target Baru' }}</h1>
+            <p class="text-white/60">
+                {{ $isEditMode ? 'Perbarui target yang sudah ada' : 'Tentukan target income dan periode waktunya' }}
+            </p>
         </div>
 
         <!-- Alert: Already has active target -->
-        @if ($hasActiveTarget)
+        @if ($hasActiveTarget && !$isEditMode)
             <div class="mb-8 p-4 bg-yellow-500/20 border border-yellow-400/30 rounded-xl">
                 <div class="flex items-start gap-3">
                     <svg class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
@@ -92,7 +94,7 @@
                     </label>
                     <input type="text" id="title" wire:model="title" placeholder="Contoh: Target Februari 2026"
                         class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                        {{ $hasActiveTarget ? 'disabled' : '' }}>
+                        {{ $hasActiveTarget && !$isEditMode ? 'disabled' : '' }}>
                     @error('title')
                         <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -107,7 +109,7 @@
                         </label>
                         <input type="date" id="start_date" wire:model="start_date"
                             class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all [color-scheme:dark]"
-                            {{ $hasActiveTarget ? 'disabled' : '' }}>
+                            {{ $hasActiveTarget && !$isEditMode ? 'disabled' : '' }}>
                         @error('start_date')
                             <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                         @enderror
@@ -120,7 +122,7 @@
                         </label>
                         <input type="date" id="end_date" wire:model="end_date"
                             class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all [color-scheme:dark]"
-                            {{ $hasActiveTarget ? 'disabled' : '' }}>
+                            {{ $hasActiveTarget && !$isEditMode ? 'disabled' : '' }}>
                         @error('end_date')
                             <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                         @enderror
@@ -136,7 +138,7 @@
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-medium">Rp</span>
                         <input type="text" id="target_amount" wire:model="target_amount" placeholder="10.000.000"
                             class="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                            {{ $hasActiveTarget ? 'disabled' : '' }} x-data
+                            {{ $hasActiveTarget && !$isEditMode ? 'disabled' : '' }} x-data
                             x-on:input="
                                 let value = $el.value.replace(/\D/g, '');
                                 $el.value = new Intl.NumberFormat('id-ID').format(value);
@@ -152,8 +154,10 @@
                 <div class="pt-4">
                     <button type="submit"
                         class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-slate-600 hover:bg-slate-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-xl shadow-slate-900/25"
-                        {{ $hasActiveTarget ? 'disabled' : '' }} wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="save">Buat Target</span>
+                        {{ $hasActiveTarget && !$isEditMode ? 'disabled' : '' }} wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="save">
+                            {{ $isEditMode ? 'Simpan Perubahan' : 'Buat Target' }}
+                        </span>
                         <span wire:loading wire:target="save" class="flex items-center gap-2">
                             <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10"

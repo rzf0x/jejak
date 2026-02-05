@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     // Targets
     Route::get('/targets/create', TargetForm::class)->name('targets.create');
+    Route::get('/targets/{target}/edit', TargetForm::class)->name('targets.edit');
 
     // Daily Progress
     Route::get('/progress', DailyProgressList::class)->name('progress.index');

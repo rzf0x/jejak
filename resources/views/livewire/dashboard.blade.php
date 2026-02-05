@@ -55,9 +55,19 @@
         @if ($activeTarget)
             <!-- Welcome Header -->
             <div class="mb-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
-                    {{ $activeTarget->title ?? 'Target Aktif' }}
-                </h1>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        {{ $activeTarget->title ?? 'Target Aktif' }}
+                    </h1>
+                    <a href="{{ route('targets.edit', $activeTarget) }}" wire:navigate
+                        class="p-2 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                        title="Edit Target">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </a>
+                </div>
                 <p class="text-white/60">
                     {{ $activeTarget->start_date->format('d M Y') }} - {{ $activeTarget->end_date->format('d M Y') }}
                 </p>
