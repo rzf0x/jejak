@@ -14,7 +14,9 @@ class GoogleController extends Controller
      */
     public function redirect()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+            ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
+            ->redirect();
     }
 
     /**
@@ -23,7 +25,9 @@ class GoogleController extends Controller
     public function callback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')
+                ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
+                ->user();
 
             // Find or create user
             $user = User::updateOrCreate(
@@ -40,7 +44,7 @@ class GoogleController extends Controller
 
             return redirect()->intended('/dashboard');
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
+            return redirect('/login')->with('error', 'Gagal login dengan Google. ' . $e->getMessage());
         }
     }
 

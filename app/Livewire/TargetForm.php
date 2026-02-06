@@ -6,14 +6,20 @@ use App\Models\Target;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class TargetForm extends Component
 {
+    use WithFileUploads;
+
     public ?Target $target = null;
     public bool $isEditMode = false;
 
     #[Validate('nullable|string|max:255')]
     public string $title = '';
+
+    #[Validate('nullable|image|max:2048')]
+    public $image;
 
     #[Validate('required|date')]
     public string $start_date = '';
@@ -25,9 +31,9 @@ class TargetForm extends Component
 
     public bool $hasActiveTarget = false;
 
-    public function mount(Target $target = null): void
+    public function mount(?Target $target = null): void
     {
-        if ($target->exists) {
+        if ($target && $target->exists) {
             // Edit Mode
             if ($target->user_id !== Auth::id()) {
                 abort(403);
@@ -70,6 +76,7 @@ class TargetForm extends Component
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'target_amount' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $data = [
@@ -79,6 +86,10 @@ class TargetForm extends Component
             'target_amount' => (int) $this->target_amount,
             'status' => 'active',
         ];
+
+        if ($this->image) {
+            $data['image_path'] = $this->image->store('targets', 'public');
+        }
 
         if ($this->isEditMode) {
             $this->target->update($data);

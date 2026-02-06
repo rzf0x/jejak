@@ -51,7 +51,6 @@ class DailyProgressList extends Component
     {
         $progress = DailyProgress::find($progressId);
 
-        // Security check: ensure progress belongs to current user's active target
         if ($progress && $progress->target_id === $this->activeTarget->id) {
             $progress->delete();
             
@@ -62,6 +61,45 @@ class DailyProgressList extends Component
 
             session()->flash('success', 'Progress berhasil dihapus.');
         }
+    }
+
+    public function exportCsv()
+    {
+        if (!$this->activeTarget) {
+            return;
+        }
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="laporan-progress-' . now()->format('Y-m-d') . '.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            
+            // CSV Header
+            fputcsv($file, ['Tanggal', 'Income (Rp)', 'Pencapaian', 'Pelajaran', 'Rencana']);
+
+            // Data
+            $data = $this->activeTarget->dailyProgress()->orderBy('date', 'desc')->get();
+
+            foreach ($data as $row) {
+                fputcsv($file, [
+                    $row->date->format('Y-m-d'),
+                    $row->income,
+                    $row->achievement,
+                    $row->lesson_learned,
+                    $row->improvement_plan
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function render()
